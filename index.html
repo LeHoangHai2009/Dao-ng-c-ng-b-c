@@ -215,3 +215,277 @@
        ========================================================================= -->
   <section id="intro" class="relative pt-12 pb-20 overflow-hidden bg-gradient-to-b from-white via-crimson-50/25 to-slate-50 border-b border-slate-200">
     <canvas id="heroWavesCanvas" class="ab
+      <!-- ========================================== -->
+<!-- BỘ ĐIỀU KHIỂN CỬ CHỈ MEDIAPIPE & PEERJS    -->
+<!-- Tác quyền: Lê Hoàng Hải                    -->
+<!-- ========================================== -->
+
+<!-- Thư viện MediaPipe Hands & PeerJS qua CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+<!-- Nút mở bảng điều khiển cử chỉ ở góc màn hình -->
+<div id="gesture-hub-btn" onclick="toggleGestureModal()" style="position: fixed; bottom: 85px; right: 24px; z-index: 999; background: #D71920; color: #fff; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(215,25,32,0.35); font-size: 20px; transition: transform 0.2s;" title="Điều khiển bằng cử chỉ tay">
+  🖐️
+</div>
+
+<!-- Modal Điều Khiển Cử Chỉ -->
+<div id="gesture-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+  <div style="background: #FFFFFF; border-radius: 18px; width: 92%; max-width: 480px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid #F0F0F0; font-family: sans-serif; position: relative;">
+    <button onclick="toggleGestureModal()" style="position: absolute; top: 16px; right: 16px; border: none; background: #F5F5F5; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;">✕</button>
+    
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+      <span style="font-size: 24px;">🖐️</span>
+      <div>
+        <h3 style="margin: 0; font-size: 18px; color: #171717;">Gesture Presentation Control</h3>
+        <p style="margin: 2px 0 0; font-size: 12px; color: #666;">Điều khiển thuyết trình bằng cử chỉ camera điện thoại</p>
+      </div>
+    </div>
+
+    <!-- Chọn vai trò: Máy tính hiển thị hoặc Điện thoại quét camera -->
+    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+      <button id="btn-role-host" onclick="setupHostMode()" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #D71920; background: #D71920; color: #fff; font-weight: 600; cursor: pointer;">💻 Máy Tính (Màn Chiếu)</button>
+      <button id="btn-role-client" onclick="setupClientMode()" style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #DDD; background: #F9F9F9; color: #333; font-weight: 600; cursor: pointer;">📱 Điện Thoại (Camera)</button>
+    </div>
+
+    <!-- Giao diện Máy Tính (HOST) -->
+    <div id="panel-host-mode">
+      <div style="text-align: center; padding: 10px; background: #FFF5F5; border-radius: 12px; border: 1px dashed #D71920; margin-bottom: 12px;">
+        <canvas id="qr-canvas" style="max-width: 140px; margin: 0 auto; display: block;"></canvas>
+        <div style="font-size: 12px; color: #555; margin-top: 6px;">Quét mã QR bằng điện thoại để kết nối camera</div>
+        <div style="font-weight: 700; color: #D71920; margin-top: 4px; font-size: 14px;">Mã phòng: <span id="host-room-id">Đang khởi tạo...</span></div>
+      </div>
+      <div id="host-status" style="font-size: 13px; text-align: center; color: #D71920; font-weight: bold;">Chờ kết nối từ điện thoại...</div>
+    </div>
+
+    <!-- Giao diện Điện Thoại (CLIENT) -->
+    <div id="panel-client-mode" style="display: none;">
+      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+        <input type="text" id="client-room-input" placeholder="Nhập mã phòng từ máy tính" style="flex: 1; padding: 8px 12px; border: 1px solid #DDD; border-radius: 8px; font-size: 14px;">
+        <button onclick="connectToHost()" style="background: #171717; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer;">Kết nối</button>
+      </div>
+      <div style="position: relative; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 4/3; margin-bottom: 10px;">
+        <video id="gesture-video" playsinline style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+        <canvas id="gesture-output-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; transform: scaleX(-1);"></canvas>
+        <div id="gesture-detected-tag" style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); color: #00FF66; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">Sẵn sàng nhận diện...</div>
+      </div>
+      <div style="font-size: 11px; color: #666; line-height: 1.4;">
+        👉 <b>Vẫy sang phải:</b> Next Slide | 👈 <b>Vẫy sang trái:</b> Prev Slide<br>
+        ☝️ <b>Ngón trỏ:</b> Di chuyển Laser pointer | ✊ <b>Nắm tay:</b> Toggle AI
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- LOGIC ĐIỀU KHIỂN & KẾT NỐI WEBRTC ---
+let peer = null;
+let peerConn = null;
+let camera = null;
+let handsDetector = null;
+let lastGestureTime = 0;
+let prevHandX = null;
+
+function toggleGestureModal() {
+  const modal = document.getElementById('gesture-modal');
+  modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+}
+
+// 1. Chế độ MÁY TÍNH (Màn hình HDMI)
+function setupHostMode() {
+  document.getElementById('panel-host-mode').style.display = 'block';
+  document.getElementById('panel-client-mode').style.display = 'none';
+  document.getElementById('btn-role-host').style.background = '#D71920';
+  document.getElementById('btn-role-host').style.color = '#fff';
+  document.getElementById('btn-role-client').style.background = '#F9F9F9';
+  document.getElementById('btn-role-client').style.color = '#333';
+
+  if (!peer) {
+    const roomId = 'barton-' + Math.floor(1000 + Math.random() * 9000);
+    peer = new Peer(roomId);
+
+    peer.on('open', (id) => {
+      document.getElementById('host-room-id').innerText = id;
+      const joinUrl = window.location.href.split('?')[0] + '?room=' + id;
+      QRCode.toCanvas(document.getElementById('qr-canvas'), joinUrl, { width: 130 });
+    });
+
+    peer.on('connection', (conn) => {
+      peerConn = conn;
+      document.getElementById('host-status').innerText = '✅ Đã kết nối với điện thoại!';
+      document.getElementById('host-status').style.color = '#10B981';
+
+      conn.on('data', (data) => {
+        handleGestureCommand(data);
+      });
+    });
+  }
+}
+
+// Xử lý lệnh nhận được trên máy tính
+function handleGestureCommand(data) {
+  const now = Date.now();
+  if (data.type === 'ACTION' && now - lastGestureTime > 900) {
+    if (data.action === 'NEXT') {
+      if (typeof nextSlide === 'function') nextSlide();
+      showGestureNotification('➡️ Slide Kế Tiếp');
+    } else if (data.action === 'PREV') {
+      if (typeof prevSlide === 'function') prevSlide();
+      showGestureNotification('⬅️ Slide Trước');
+    } else if (data.action === 'FIST') {
+      if (typeof toggleGeminiChat === 'function') toggleGeminiChat();
+      showGestureNotification('✊ Bật/Tắt AI');
+    }
+    lastGestureTime = now;
+  } else if (data.type === 'LASER') {
+    // Cập nhật vị trí con trỏ Laser đỏ theo ngón tay
+    const laser = document.getElementById('laser-pointer');
+    if (laser) {
+      laser.style.display = 'block';
+      laser.style.left = (data.x * window.innerWidth) + 'px';
+      laser.style.top = (data.y * window.innerHeight) + 'px';
+    }
+  }
+}
+
+function showGestureNotification(text) {
+  let toast = document.getElementById('gesture-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'gesture-toast';
+    toast.style.cssText = 'position:fixed; top:20px; right:20px; background:rgba(215,25,32,0.9); color:#fff; padding:10px 18px; border-radius:12px; font-weight:bold; font-size:16px; z-index:99999; backdrop-filter:blur(6px); transition:opacity 0.3s;';
+    document.body.appendChild(toast);
+  }
+  toast.innerText = text;
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, 1200);
+}
+
+// 2. Chế độ ĐIỆN THOẠI (Camera nhận diện tay)
+function setupClientMode() {
+  document.getElementById('panel-host-mode').style.display = 'none';
+  document.getElementById('panel-client-mode').style.display = 'block';
+  document.getElementById('btn-role-client').style.background = '#D71920';
+  document.getElementById('btn-role-client').style.color = '#fff';
+  document.getElementById('btn-role-host').style.background = '#F9F9F9';
+  document.getElementById('btn-role-host').style.color = '#333';
+
+  // Tự động điền mã phòng nếu mở từ link quét QR
+  const urlParams = new URLSearchParams(window.location.search);
+  const roomParam = urlParams.get('room');
+  if (roomParam) {
+    document.getElementById('client-room-input').value = roomParam;
+    connectToHost();
+  }
+  initMediaPipeCamera();
+}
+
+function connectToHost() {
+  const targetRoom = document.getElementById('client-room-input').value.trim();
+  if (!targetRoom) return alert('Vui lòng nhập mã phòng');
+  
+  if (!peer) peer = new Peer();
+  peer.on('open', () => {
+    peerConn = peer.connect(targetRoom);
+    peerConn.on('open', () => {
+      document.getElementById('gesture-detected-tag').innerText = '✅ Đã ghép đôi với màn chiếu!';
+      document.getElementById('gesture-detected-tag').style.color = '#00FF66';
+    });
+  });
+}
+
+function initMediaPipeCamera() {
+  const videoElement = document.getElementById('gesture-video');
+  const canvasElement = document.getElementById('gesture-output-canvas');
+  const canvasCtx = canvasElement.getContext('2d');
+
+  handsDetector = new Hands({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+  });
+
+  handsDetector.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.65,
+    minTrackingConfidence: 0.65
+  });
+
+  handsDetector.onResults((results) => {
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+      const landmarks = results.multiHandLandmarks[0];
+      detectHandGestures(landmarks);
+    }
+    canvasCtx.restore();
+  });
+
+  camera = new Camera(videoElement, {
+    onFrame: async () => {
+      await handsDetector.send({ image: videoElement });
+    },
+    width: 640,
+    height: 480
+  });
+  camera.start();
+}
+
+// Phân tích chuyển động của bàn tay
+function detectHandGestures(landmarks) {
+  const wrist = landmarks[0];
+  const indexTip = landmarks[8];
+  const indexPip = landmarks[6];
+  const middleTip = landmarks[12];
+  const ringTip = landmarks[16];
+  const pinkyTip = landmarks[20];
+
+  // 1. Kiểm tra cử chỉ Nắm tay (Fist)
+  const isFist = (indexTip.y > indexPip.y && middleTip.y > landmarks[10].y && ringTip.y > landmarks[14].y && pinkyTip.y > landmarks[18].y);
+  if (isFist) {
+    sendAction('FIST', '✊ Nắm tay: Toggle AI');
+    return;
+  }
+
+  // 2. Kiểm tra cử chỉ Vuốt tay (Swipe) qua vận tốc trục X của cổ tay
+  const currentX = wrist.x;
+  if (prevHandX !== null) {
+    const deltaX = currentX - prevHandX;
+    if (deltaX > 0.08) {
+      sendAction('PREV', '👈 Vẫy sang trái: Lùi slide');
+      prevHandX = null;
+      return;
+    } else if (deltaX < -0.08) {
+      sendAction('NEXT', '👉 Vẫy sang phải: Tiến slide');
+      prevHandX = null;
+      return;
+    }
+  }
+  prevHandX = currentX;
+
+  // 3. Cử chỉ chỉ ngón trỏ (Laser Pointer)
+  const isPointing = (indexTip.y < indexPip.y && middleTip.y > landmarks[10].y);
+  if (isPointing && peerConn && peerConn.open) {
+    peerConn.send({
+      type: 'LASER',
+      x: 1 - indexTip.x, // Đảo trục gương
+      y: indexTip.y
+    });
+    document.getElementById('gesture-detected-tag').innerText = '☝️ Laser Pointer';
+  }
+}
+
+function sendAction(actionType, label) {
+  const now = Date.now();
+  if (now - lastGestureTime < 1000) return; // Debounce 1 giây tránh nhảy đúp slide
+  lastGestureTime = now;
+
+  document.getElementById('gesture-detected-tag').innerText = label;
+  if (peerConn && peerConn.open) {
+    peerConn.send({ type: 'ACTION', action: actionType });
+  }
+}
+</script>
+
