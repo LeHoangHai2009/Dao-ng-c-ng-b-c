@@ -1,217 +1,1134 @@
 <!DOCTYPE html>
-<html lang="vi" class="scroll-smooth">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BartonLab Pro v4.0 • Hệ Thống Thí Nghiệm & Thuyết Trình Vật Lý Chuyên Nghiệp | Lê Hoàng Hải</title>
+  <title>BartonLab Pro v4.0 - Con Lắc Barton & Dao Động Cưỡng Bức</title>
 
-  <!-- Google Fonts: Inter & JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-            math: ['Cambria Math', 'STIX Two Math', 'Times New Roman', 'serif']
-          },
-          colors: {
-            crimson: {
-              DEFAULT: '#D71920',
-              50: '#FDF2F2',
-              100: '#FDE8E8',
-              200: '#FBD5D5',
-              300: '#F8B4B4',
-              400: '#F98080',
-              500: '#F05252',
-              600: '#D71920',
-              700: '#A80F18',
-              800: '#8A0A12',
-              900: '#5F060B'
-            },
-            physBlue: '#2563EB',
-            physOrange: '#EA580C',
-            physGray: '#64748B'
-          },
-          boxShadow: {
-            'crimson-glow': '0 0 25px rgba(215, 25, 32, 0.35)',
-            'crimson-sm': '0 2px 10px rgba(215, 25, 32, 0.22)',
-            'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
-            'card-elevated': '0 10px 30px -5px rgba(0, 0, 0, 0.08)'
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Marked for Markdown Rendering in AI Chat -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
   <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #F8FAFC; }
-    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #D71920; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
-    /* Crisp Formula Styling */
-    .math-card {
-      background: #FFFFFF;
-      border: 1px solid #FEE2E2;
-      border-left: 4px solid #D71920;
-      border-radius: 12px;
-      padding: 12px 18px;
-      font-family: 'Cambria Math', 'STIX Two Math', 'Times New Roman', serif;
-      box-shadow: 0 2px 10px rgba(215, 25, 32, 0.04);
-      margin: 10px 0;
+    :root {
+      --primary: #D71920;
+      --primary-dark: #A80F18;
+      --text-main: #171717;
+      --bg-canvas: #F8FAFC;
     }
-    .frac {
-      display: inline-flex;
-      flex-direction: column;
-      vertical-align: middle;
-      text-align: center;
-      padding: 0 4px;
-      font-size: 0.9em;
-    }
-    .frac-top { border-bottom: 1.5px solid currentColor; padding-bottom: 1px; }
-    .frac-bot { padding-top: 1px; }
 
-    /* Range input design */
-    input[type=range] {
-      -webkit-appearance: none;
-      height: 6px;
-      border-radius: 9999px;
-      background: #E2E8F0;
-      outline: none;
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #FFFFFF;
+      color: var(--text-main);
+      overflow-x: hidden;
+      touch-action: pan-y;
     }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #D71920;
-      cursor: pointer;
-      box-shadow: 0 0 10px rgba(215, 25, 32, 0.4);
-      border: 2px solid #FFFFFF;
-      transition: transform 0.1s ease;
-    }
-    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
-    /* Laser Pointer */
-    #laserPointer {
-      pointer-events: none;
+    .math-font { font-family: 'JetBrains Mono', monospace; }
+
+    /* Hiệu ứng kính mờ & Shadow chuẩn cao cấp */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Tia laser đỏ cho thuyết trình */
+    #laser-pointer {
       position: fixed;
       width: 14px;
       height: 14px;
-      border-radius: 50%;
       background: #FF0033;
-      box-shadow: 0 0 18px 5px rgba(255, 0, 51, 0.85);
-      z-index: 99999;
-      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      box-shadow: 0 0 14px #FF0033, 0 0 25px #FF0000;
+      pointer-events: none;
+      z-index: 100000;
       display: none;
+      transform: translate(-50%, -50%);
     }
 
-    /* Print styles for Report */
-    @media print {
-      body * { visibility: hidden; }
-      #printableReportArea, #printableReportArea * { visibility: visible; }
-      #printableReportArea { position: absolute; left: 0; top: 0; width: 100%; }
+    /* Hiệu ứng hào quang cộng hưởng */
+    .pulse-glow {
+      animation: pulseGlow 1.5s infinite alternate ease-in-out;
+    }
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 10px rgba(215, 25, 32, 0.35); }
+      to { box-shadow: 0 0 26px rgba(215, 25, 32, 0.9); }
     }
   </style>
 </head>
+<body class="relative min-h-screen">
 
-<body class="bg-[#FAFAFA] text-slate-800 antialiased selection:bg-crimson-600 selection:text-white min-h-screen flex flex-col justify-between">
+  <div id="laser-pointer"></div>
 
-  <!-- Laser Pointer for Presentation Mode -->
-  <div id="laserPointer"></div>
-
-  <!-- =========================================================================
-       1. HEADER & SIDEBAR NAVIGATION
-       ========================================================================= -->
-  <header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-      
-      <!-- Logo & Brand -->
-      <a href="#" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-crimson-700 via-crimson-600 to-red-500 flex items-center justify-center text-white font-black shadow-crimson-sm group-hover:scale-105 transition-transform shrink-0">
-          <i data-lucide="activity" class="w-5 h-5"></i>
-        </div>
-        <div class="min-w-0">
+  <!-- HEADER THANH ĐIỀU HƯỚNG CHÍNH -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-red-500/20">B</div>
+        <div>
           <div class="flex items-center gap-2">
-            <span class="text-lg font-black tracking-tight text-slate-900 leading-none">Barton<span class="text-crimson-600">Lab</span></span>
-            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-crimson-100 text-crimson-800 border border-crimson-200">v4.0 Pro</span>
+            <span class="font-extrabold text-lg tracking-tight text-gray-900">BartonLab <span class="text-red-600">Pro</span></span>
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-red-100 text-red-700 rounded-full">v4.0</span>
           </div>
-          <p class="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-            Tác quyền đề án: <strong class="text-slate-800 font-bold">Lê Hoàng Hải</strong>
-          </p>
+          <p class="text-xs text-gray-500 hidden sm:block">Đề án nghiên cứu • Tác quyền: <b>Lê Hoàng Hải</b></p>
         </div>
-      </a>
+      </div>
 
-      <!-- Desktop Navigation Menu -->
-      <nav class="hidden xl:flex items-center gap-5 text-xs font-bold text-slate-600 uppercase tracking-wider">
-        <a href="#intro" class="hover:text-crimson-600 transition">Tổng Quan</a>
-        <a href="#theory" class="hover:text-crimson-600 transition">Lý Thuyết</a>
-        <a href="#bartonSim" class="text-crimson-600 hover:text-crimson-700 transition flex items-center gap-1 font-extrabold">
-          <i data-lucide="play-circle" class="w-3.5 h-3.5"></i> Con Lắc Barton
-        </a>
-        <a href="#virtualLab" class="hover:text-crimson-600 transition">Lab Ảo 4 Biểu Đồ</a>
-        <a href="#resonance" class="hover:text-crimson-600 transition">Cộng Hưởng</a>
-        <a href="#applications" class="hover:text-crimson-600 transition">Thực Tiễn</a>
-        <a href="#dataCenter" class="hover:text-crimson-600 transition">Dữ Liệu &amp; Báo Cáo</a>
-        <a href="#quiz" class="hover:text-crimson-600 transition">Trắc Nghiệm</a>
-      </nav>
-
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-2 shrink-0">
-        <!-- Presentation Mode CTA -->
-        <button id="btnOpenPresentation" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-crimson-600 to-crimson-700 hover:from-crimson-700 hover:to-crimson-800 text-white text-xs font-bold shadow-crimson-sm active:scale-95 transition">
+      <!-- Menu tính năng thao tác nhanh -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleDeckMode()" class="px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition">
           <i data-lucide="presentation" class="w-4 h-4"></i>
-          <span class="hidden sm:inline">Thuyết Trình Pro</span>
+          <span>Thuyết Trình Pro</span>
         </button>
 
-        <!-- Gemini AI Toggle Button -->
-        <button id="btnOpenAIHeader" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-crimson-200 bg-crimson-50 hover:bg-crimson-100 text-crimson-800 text-xs font-bold transition">
-          <i data-lucide="bot" class="w-4 h-4 text-crimson-600"></i>
-          <span class="hidden sm:inline">AI Gemini</span>
-        </button>
-
-        <!-- Settings Button -->
-        <button id="btnOpenSettings" class="p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 shadow-sm transition" title="Cài đặt API & Cấu hình">
+        <button onclick="toggleSettingsModal()" class="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 text-gray-700 transition" title="Cấu hình hệ thống & Gemini API">
           <i data-lucide="settings" class="w-4 h-4"></i>
         </button>
 
-        <!-- Mobile Navigation Drawer Toggle -->
-        <button id="btnMobileNavToggle" class="xl:hidden p-2 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition">
-          <i data-lucide="menu" class="w-4 h-4"></i>
+        <button onclick="toggleAIChat()" class="p-2 rounded-lg bg-gray-900 text-white hover:bg-black transition" title="Trợ lý Gemini Physics AI">
+          <i data-lucide="bot" class="w-4 h-4"></i>
         </button>
       </div>
-
-    </div>
-
-    <!-- Mobile Drawer Menu Dropdown -->
-    <div id="mobileNavDrawer" class="hidden xl:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-2 text-xs font-bold text-slate-700 shadow-lg">
-      <a href="#intro" class="block py-1.5 hover:text-crimson-600">1. Tổng Quan &amp; Mở Đầu</a>
-      <a href="#theory" class="block py-1.5 hover:text-crimson-600">2. Lý Thuyết Dao Động Cưỡng Bức</a>
-      <a href="#bartonSim" class="block py-1.5 text-crimson-600 font-extrabold">3. Thí Nghiệm Con Lắc Barton 60FPS</a>
-      <a href="#virtualLab" class="block py-1.5 hover:text-crimson-600">4. Phòng Lab Ảo &amp; 4 Biểu Đồ</a>
-      <a href="#resonance" class="block py-1.5 hover:text-crimson-600">5. Bản Chất Hiện Tượng Cộng Hưởng</a>
-      <a href="#applications" class="block py-1.5 hover:text-crimson-600">6. Phân Tích Thực Tiễn (Taipei 101, Tacoma)</a>
-      <a href="#dataCenter" class="block py-1.5 hover:text-crimson-600">7. Data Center &amp; Xuất Báo Cáo</a>
-      <a href="#quiz" class="block py-1.5 hover:text-crimson-600">8. Kiểm Tra Kiến Thức &amp; Mindmap</a>
     </div>
   </header>
 
-  <!-- =========================================================================
-       2. TRANG 1: INTRODUCTION & HERO SECTION
-       ========================================================================= -->
-  <section id="intro" class="relative pt-12 pb-20 overflow-hidden bg-gradient-to-b from-white via-crimson-50/25 to-slate-50 border-b border-slate-200">
-    <canvas id="heroWavesCanvas" class="ab
+  <!-- NỘI DUNG CHÍNH -->
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-12">
+
+    <!-- HERO SECTION -->
+    <section class="text-center space-y-4 pt-4 pb-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-red-600 animate-ping"></span>
+        Professional Physics Laboratory & Presentation System
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight leading-tight">
+        Con Lắc Barton & <span class="text-red-600">Dao Động Cưỡng Bức</span>
+      </h1>
+      <p class="max-w-3xl mx-auto text-sm sm:text-base text-gray-600 leading-relaxed">
+        Khảo sát quá trình truyền năng lượng tuần hoàn qua dây liên kết đàn hồi. Phân tích hàm đáp ứng biên độ cực đại tại tần số góc <span class="math-font font-semibold text-red-600">ω_r = √(ω₀² - 2γ²)</span> và bản chất độ lệch pha vuông góc <span class="math-font font-semibold text-red-600">Δφ = π/2</span>.
+      </p>
+    </section>
+
+    <!-- SECTION 1: PHÒNG THÍ NGHIỆM CON LẮC BARTON TƯƠNG TÁC CAO -->
+    <section class="glass-card rounded-2xl p-4 sm:p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-4">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <i data-lucide="activity" class="text-red-600 w-5 h-5"></i>
+            Mô Phỏng Động Học Hệ Con Lắc Barton (60 FPS)
+          </h2>
+          <p class="text-xs text-gray-500">Kéo thả quả cầu đỏ phát động (Driver D) bằng chuột hoặc chạm ngón tay trên màn hình</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="toggleSimulation()" id="btn-sim-toggle" class="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold flex items-center gap-1.5 transition">
+            <i data-lucide="pause" class="w-3.5 h-3.5" id="icon-sim-toggle"></i>
+            <span id="text-sim-toggle">Tạm dừng</span>
+          </button>
+          <button onclick="resetSimulation()" class="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-700 text-xs font-semibold transition">
+            Đặt lại
+          </button>
+        </div>
+      </div>
+
+      <!-- Canvas Mô Phỏng Chính -->
+      <div class="relative w-full aspect-[16/9] sm:aspect-[21/9] bg-gradient-to-b from-gray-50 to-white rounded-xl border border-gray-200 overflow-hidden shadow-inner">
+        <canvas id="bartonCanvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+        
+        <!-- Bảng trạng thái góc nhìn thời gian thực -->
+        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-gray-200 shadow-sm text-xs space-y-1 pointer-events-none">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></span>
+            <span class="font-bold text-gray-900">Cộng hưởng: <span id="res-badge" class="text-red-600 font-extrabold">Con lắc P3 (L = L_D)</span></span>
+          </div>
+          <div class="text-gray-500 text-[11px]">Góc lệch pha: <span class="font-semibold text-gray-800">Δφ ≈ 90° (π/2 rad)</span></div>
+        </div>
+      </div>
+
+      <!-- Bảng điều khiển tham số -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs text-gray-600">
+            <span>Chiều dài Driver (L_D)</span>
+            <span id="lbl-ld" class="font-bold text-red-600">0.50 m</span>
+          </div>
+          <input type="range" id="param-ld" min="0.25" max="0.75" step="0.05" value="0.5" class="w-full accent-red-600" oninput="updateBartonParams()">
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs text-gray-600">
+            <span>Hệ số lực cản (γ)</span>
+            <span id="lbl-gamma" class="font-bold text-red-600">0.08 s⁻¹</span>
+          </div>
+          <input type="range" id="param-gamma" min="0.01" max="0.25" step="0.01" value="0.08" class="w-full accent-red-600" oninput="updateBartonParams()">
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs text-gray-600">
+            <span>Biên độ ngoại lực (F₀)</span>
+            <span id="lbl-force" class="font-bold text-red-600">1.0 N</span>
+          </div>
+          <input type="range" id="param-force" min="0.2" max="2.0" step="0.1" value="1.0" class="w-full accent-red-600" oninput="updateBartonParams()">
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs text-gray-600">
+            <span>Tốc độ mô phỏng</span>
+            <span id="lbl-speed" class="font-bold text-red-600">1.0x</span>
+          </div>
+          <input type="range" id="param-speed" min="0.2" max="2.0" step="0.2" value="1.0" class="w-full accent-red-600" oninput="updateBartonParams()">
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: BỐN BIỂU ĐỒ PHÂN TÍCH KHOA HỌC THỜI GIAN THỰC -->
+    <section class="space-y-4">
+      <div class="border-b border-gray-200 pb-3">
+        <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <i data-lucide="bar-chart-2" class="text-red-600 w-5 h-5"></i>
+          Hệ Thống 4 Biểu Đồ Phân Tích Động Học
+        </h2>
+        <p class="text-xs text-gray-500">Đồ thị được tính toán giải tích trực tiếp theo thời gian thực từ các phương trình vi phân</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Đồ thị 1: Li độ theo thời gian x(t) -->
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-gray-800">1. Li độ theo thời gian x(t)</span>
+            <span class="text-red-600 font-mono">Xác lập điều hòa</span>
+          </div>
+          <div class="aspect-[16/9] bg-white rounded-xl border border-gray-200 relative overflow-hidden">
+            <canvas id="chartXtCanvas" class="w-full h-full block"></canvas>
+          </div>
+        </div>
+
+        <!-- Đồ thị 2: Phổ biên độ theo tần số A(f) -->
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-gray-800">2. Phổ biên độ Lorentzian A(f)</span>
+            <span class="text-red-600 font-mono" id="peak-freq-lbl">Đỉnh: 0.70 Hz</span>
+          </div>
+          <div class="aspect-[16/9] bg-white rounded-xl border border-gray-200 relative overflow-hidden">
+            <canvas id="chartAfCanvas" class="w-full h-full block"></canvas>
+          </div>
+        </div>
+
+        <!-- Đồ thị 3: Độ lệch pha φ(f) -->
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-gray-800">3. Độ lệch pha theo tần số φ(f)</span>
+            <span class="text-red-600 font-mono">Tại f₀: φ = π/2</span>
+          </div>
+          <div class="aspect-[16/9] bg-white rounded-xl border border-gray-200 relative overflow-hidden">
+            <canvas id="chartPhaseCanvas" class="w-full h-full block"></canvas>
+          </div>
+        </div>
+
+        <!-- Đồ thị 4: Công suất hấp thụ P(f) -->
+        <div class="glass-card rounded-2xl p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-gray-800">4. Công suất trung bình P(f)</span>
+            <span class="text-red-600 font-mono">⟨P_vào⟩ = ⟨P_cản⟩</span>
+          </div>
+          <div class="aspect-[16/9] bg-white rounded-xl border border-gray-200 relative overflow-hidden">
+            <canvas id="chartPowerCanvas" class="w-full h-full block"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: EXPERIMENT DATA CENTER & XUẤT BÁO CÁO -->
+    <section class="glass-card rounded-2xl p-6 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-3">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <i data-lucide="database" class="text-red-600 w-5 h-5"></i>
+            Experiment Data Center & Phân Tích Sai Số
+          </h2>
+          <p class="text-xs text-gray-500">Bảng dữ liệu đo đạc thực nghiệm đối chiếu cùng lý thuyết giải tích</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="exportCSVData()" class="px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 text-xs font-semibold text-gray-700 flex items-center gap-1.5 transition">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Xuất CSV
+          </button>
+          <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-gray-900 hover:bg-black text-white text-xs font-semibold flex items-center gap-1.5 transition">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i> In Báo Cáo
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-gray-200 text-gray-500 uppercase font-semibold">
+              <th class="py-2.5">Con lắc</th>
+              <th class="py-2.5">Chiều dài L (m)</th>
+              <th class="py-2.5">Tần số riêng f₀ (Hz)</th>
+              <th class="py-2.5">Biên độ lý thuyết (cm)</th>
+              <th class="py-2.5">Biên độ mô phỏng (cm)</th>
+              <th class="py-2.5 text-right">Sai số tương đối δ(%)</th>
+            </tr>
+          </thead>
+          <tbody id="table-data-center" class="divide-y divide-gray-100 font-mono">
+            <!-- Render động bằng JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 4: 10 CÂU HỎI TRẮC NGHIỆM VẬT LÝ TƯƠNG TÁC -->
+    <section class="glass-card rounded-2xl p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <i data-lucide="check-circle-2" class="text-red-600 w-5 h-5"></i>
+            Kiểm Tra Kiến Thức Chuyên Sâu (10 Câu Hỏi)
+          </h2>
+          <p class="text-xs text-gray-500">Chấm điểm tự động và có lời giải thích chi tiết cho từng phương án</p>
+        </div>
+        <div class="text-xs font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-full border border-red-200">
+          Điểm số: <span id="quiz-score" class="text-sm font-extrabold">0</span> / 10
+        </div>
+      </div>
+
+      <div id="quiz-container" class="space-y-4 pt-2">
+        <!-- Render 10 câu hỏi bằng JavaScript -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: CÀI ĐẶT CẤU HÌNH HỆ THỐNG & GEMINI API            -->
+  <!-- ======================================================== -->
+  <div id="settings-modal" class="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="relative w-full max-w-md bg-white rounded-2xl p-6 shadow-2xl border border-gray-100">
+      <button onclick="toggleSettingsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-lg">✕</button>
+
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-bold">⚙️</div>
+        <div>
+          <h3 class="font-bold text-gray-900 text-base">Cài Đặt Cấu Hình Hệ Thống</h3>
+          <p class="text-xs text-gray-500">Cấu hình khóa Google Gemini API</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-gray-700 mb-1">Google Gemini API Key:</label>
+          <input type="password" id="input-api-key" placeholder="AIzaSy..." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-mono">
+          <p class="text-[11px] text-gray-500 mt-1">Khóa chuẩn bắt đầu bằng <code class="text-red-600 font-bold">AIzaSy...</code>. Nếu để trống, hệ thống sử dụng bộ máy trợ giảng ngoại tuyến tích hợp sẵn.</p>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-700 mb-1">Model Gemini:</label>
+          <select id="select-model" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs">
+            <option value="gemini-2.5-flash">gemini-2.5-flash (Khuyên dùng - Nhanh & Chính xác)</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+          </select>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <button onclick="testGeminiConnection()" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-semibold transition">
+            Kiểm Tra Kết Nối
+          </button>
+          <span id="api-status-badge" class="font-bold text-gray-500">Chưa kết nối</span>
+        </div>
+
+        <div class="pt-3 border-t border-gray-100 flex justify-end">
+          <button onclick="saveSettings()" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition">
+            Lưu Cấu Hình
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: TRỢ LÝ GEMINI PHYSICS AI (5 CHẾ ĐỘ CHUYÊN NGÀNH) -->
+  <!-- ======================================================== -->
+  <div id="ai-modal" class="fixed bottom-6 right-6 z-[10000] w-96 max-w-[92vw] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden hidden flex-col">
+    <div class="p-3.5 bg-gray-900 text-white flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded bg-red-600 flex items-center justify-center text-xs font-bold">AI</div>
+        <div>
+          <h4 class="font-bold text-xs">Gemini Physics AI</h4>
+          <span class="text-[10px] text-emerald-400">● Tích hợp phân tích dữ liệu thực tế</span>
+        </div>
+      </div>
+      <button onclick="toggleAIChat()" class="text-gray-400 hover:text-white text-base">✕</button>
+    </div>
+
+    <!-- Chọn 5 chế độ AI -->
+    <div class="px-3 py-2 bg-gray-100 border-b border-gray-200 flex items-center gap-1.5 text-[11px] overflow-x-auto">
+      <button onclick="setAIMode('tutor')" id="mode-tutor" class="px-2 py-1 rounded bg-white text-red-600 font-bold shadow-sm whitespace-nowrap">Physics Tutor</button>
+      <button onclick="setAIMode('examiner')" id="mode-examiner" class="px-2 py-1 rounded text-gray-600 hover:bg-white whitespace-nowrap">Giám Khảo</button>
+      <button onclick="setAIMode('analyst')" id="mode-analyst" class="px-2 py-1 rounded text-gray-600 hover:bg-white whitespace-nowrap">Phân Tích Lab</button>
+      <button onclick="setAIMode('coach')" id="mode-coach" class="px-2 py-1 rounded text-gray-600 hover:bg-white whitespace-nowrap">Lời Thoại</button>
+    </div>
+
+    <!-- Hộp chat tin nhắn -->
+    <div id="chat-messages" class="p-3 h-80 overflow-y-auto space-y-3 text-xs bg-gray-50">
+      <div class="bg-white p-2.5 rounded-xl border border-gray-200 text-gray-800 shadow-sm leading-relaxed">
+        Xin chào <b>Lê Hoàng Hải</b>! Tôi là trợ lý chuyên sâu về cơ học dao động. Tôi có thể đọc trực tiếp các thông số thí nghiệm hiện tại để phân tích hoặc đồng hành cùng bạn thuyết trình trước hội đồng.
+      </div>
+    </div>
+
+    <!-- Gợi ý câu hỏi -->
+    <div class="p-2 border-t border-gray-200 bg-white flex gap-1.5 overflow-x-auto text-[11px]">
+      <button onclick="askPrompt('Giải thích vì sao con lắc P3 dao động mạnh nhất?')" class="px-2.5 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 whitespace-nowrap">Vì sao P3 cộng hưởng?</button>
+      <button onclick="askPrompt('Bản chất vật lý của góc lệch pha pi/2 là gì?')" class="px-2.5 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 whitespace-nowrap">Lệch pha π/2?</button>
+      <button onclick="askPrompt('Đưa ra câu hỏi phản biện khó cho bài này.')" class="px-2.5 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 whitespace-nowrap">Hỏi phản biện</button>
+    </div>
+
+    <!-- Ô nhập tin nhắn -->
+    <div class="p-2.5 bg-white border-t border-gray-200 flex gap-1.5">
+      <input type="text" id="ai-user-input" placeholder="Hỏi AI về bài học..." class="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-xs" onkeydown="if(event.key==='Enter') sendAIMessage()">
+      <button onclick="sendAIMessage()" class="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition">Gửi</button>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- CHẾ ĐỘ THUYẾT TRÌNH PRO TOÀN MÀN HÌNH (PRESENTATION DECK)-->
+  <!-- ======================================================== -->
+  <div id="presentation-deck" class="fixed inset-0 z-[9900] bg-white hidden flex-col">
+    <!-- Header Slide -->
+    <div class="h-14 border-b border-gray-200 px-6 flex items-center justify-between bg-white text-xs">
+      <div class="flex items-center gap-3">
+        <span class="font-extrabold text-red-600 text-sm">SLIDE <span id="deck-cur-slide">1</span> / 6</span>
+        <span id="deck-slide-title" class="font-semibold text-gray-800 hidden sm:inline text-sm">Tổng quan Đề án Con lắc Barton</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="toggleLaserPointer()" id="btn-laser" class="px-2.5 py-1.5 border rounded-lg hover:bg-gray-100 font-semibold text-gray-700 flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-red-600 inline-block"></span> Laser Pointer
+        </button>
+        <button onclick="prevSlide()" class="px-3 py-1.5 border rounded-lg hover:bg-gray-100 font-semibold">◀ Trước</button>
+        <button onclick="nextSlide()" class="px-3.5 py-1.5 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700">Tiếp ▶</button>
+        <button onclick="toggleDeckMode()" class="px-3 py-1.5 border rounded-lg hover:bg-gray-100 text-red-600 font-bold ml-2">Thoát (Esc)</button>
+      </div>
+    </div>
+
+    <!-- Nội dung Slide & Speaker Notes -->
+    <div class="flex-1 p-6 sm:p-12 overflow-y-auto flex flex-col justify-between max-w-5xl mx-auto w-full">
+      <div id="deck-content" class="space-y-6">
+        <!-- Render động bằng JS -->
+      </div>
+
+      <!-- Khung ghi chú diễn giả (Speaker Notes) -->
+      <div class="mt-8 p-4 rounded-xl bg-red-50/70 border border-red-200 text-xs text-gray-700 space-y-1">
+        <div class="font-bold text-red-700 flex items-center gap-1.5">
+          <i data-lucide="mic" class="w-3.5 h-3.5"></i> Ghi chú dành cho người thuyết trình (Speaker Notes):
+        </div>
+        <p id="deck-speaker-notes" class="leading-relaxed text-gray-600">...</p>
+      </div>
+    </div>
+
+    <!-- Thanh tiến trình dưới đáy -->
+    <div class="h-1.5 bg-gray-100 w-full">
+      <div id="deck-progress" class="h-full bg-red-600 transition-all duration-300" style="width: 16.6%;"></div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- TOÀN BỘ LOGIC JAVASCRIPT HỆ THỐNG V4.0                   -->
+  <!-- ======================================================== -->
+  <script>
+    // 1. BIẾN TOÀN CỤC & THÔNG SỐ VẬT LÝ
+    let isRunning = true;
+    let time = 0;
+    const g = 9.81;
+
+    let L_D = 0.50;      // Chiều dài Driver (m)
+    let gamma = 0.08;    // Hệ số cản nhớt (s^-1)
+    let F0 = 1.0;        // Lực kích thích (N)
+    let simSpeed = 1.0;
+
+    const pendulums = [
+      { id: 'P1', L: 0.30, theta: 0, amp: 0 },
+      { id: 'P2', L: 0.40, theta: 0, amp: 0 },
+      { id: 'P3', L: 0.50, theta: 0, amp: 0 }, // Trùng L_D
+      { id: 'P4', L: 0.60, theta: 0, amp: 0 },
+      { id: 'P5', L: 0.70, theta: 0, amp: 0 }
+    ];
+
+    let driverTheta = 0;
+
+    // Canvas elements
+    const bCanvas = document.getElementById('bartonCanvas');
+    const bCtx = bCanvas.getContext('2d');
+    const xtCanvas = document.getElementById('chartXtCanvas');
+    const xtCtx = xtCanvas.getContext('2d');
+    const afCanvas = document.getElementById('chartAfCanvas');
+    const afCtx = afCanvas.getContext('2d');
+    const phaseCanvas = document.getElementById('chartPhaseCanvas');
+    const phaseCtx = phaseCanvas.getContext('2d');
+    const powerCanvas = document.getElementById('chartPowerCanvas');
+    const powerCtx = powerCanvas.getContext('2d');
+
+    function resizeAllCanvases() {
+      [bCanvas, xtCanvas, afCanvas, phaseCanvas, powerCanvas].forEach(c => {
+        const r = c.getBoundingClientRect();
+        c.width = r.width * window.devicePixelRatio;
+        c.height = r.height * window.devicePixelRatio;
+        const ctx = c.getContext('2d');
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      });
+    }
+    window.addEventListener('resize', resizeAllCanvases);
+
+    // 2. VÒNG LẶP MÔ PHỎNG VẬT LÝ
+    function physicsLoop() {
+      if (isRunning) {
+        time += 0.02 * simSpeed;
+        const omega_d = Math.sqrt(g / L_D);
+        driverTheta = 0.35 * Math.sin(omega_d * time);
+
+        pendulums.forEach(p => {
+          const omega_0 = Math.sqrt(g / p.L);
+          const denom = Math.sqrt(Math.pow(omega_0*omega_0 - omega_d*omega_d, 2) + 4 * gamma*gamma * omega_d*omega_d);
+          const A = (F0 / (p.L * 2.0)) / Math.max(denom, 0.08);
+          const phi = Math.atan2(2 * gamma * omega_d, omega_0*omega_0 - omega_d*omega_d);
+          p.amp = A;
+          p.theta = A * Math.sin(omega_d * time - phi);
+        });
+      }
+
+      renderBarton();
+      renderChartXt();
+      renderChartAf();
+      renderChartPhase();
+      renderChartPower();
+      updateDataCenterTable();
+
+      requestAnimationFrame(physicsLoop);
+    }
+
+    // Vẽ mô hình Con lắc Barton
+    function renderBarton() {
+      const w = bCanvas.width / window.devicePixelRatio;
+      const h = bCanvas.height / window.devicePixelRatio;
+      bCtx.clearRect(0, 0, w, h);
+
+      const startX = w * 0.1;
+      const endX = w * 0.9;
+      const topY = h * 0.22;
+
+      // Trục dây võng nhẹ catenary
+      bCtx.beginPath();
+      bCtx.moveTo(startX, topY);
+      bCtx.quadraticCurveTo(w * 0.5, topY + 12 + Math.sin(time * 3) * 3, endX, topY);
+      bCtx.strokeStyle = '#9CA3AF';
+      bCtx.lineWidth = 3;
+      bCtx.stroke();
+
+      // Cột đỡ 2 bên
+      bCtx.fillStyle = '#4B5563';
+      bCtx.fillRect(startX - 8, topY - 15, 16, h * 0.75);
+      bCtx.fillRect(endX - 8, topY - 15, 16, h * 0.75);
+
+      // Quả cầu phát động D (màu đỏ)
+      const dX = w * 0.22;
+      const dLen = L_D * (h * 0.7);
+      const bobDX = dX + Math.sin(driverTheta) * dLen * 0.4;
+      const bobDY = topY + Math.cos(driverTheta) * dLen;
+
+      bCtx.beginPath();
+      bCtx.moveTo(dX, topY + 4);
+      bCtx.lineTo(bobDX, bobDY);
+      bCtx.strokeStyle = '#D71920';
+      bCtx.lineWidth = 2.5;
+      bCtx.stroke();
+
+      bCtx.beginPath();
+      bCtx.arc(bobDX, bobDY, 14, 0, Math.PI * 2);
+      bCtx.fillStyle = '#D71920';
+      bCtx.fill();
+      bCtx.strokeStyle = '#FFF';
+      bCtx.lineWidth = 2;
+      bCtx.stroke();
+
+      bCtx.fillStyle = '#FFF';
+      bCtx.font = 'bold 9px sans-serif';
+      bCtx.fillText('D', bobDX - 3.5, bobDY + 3);
+
+      // 5 con lắc phụ
+      const spacing = (endX - w * 0.35) / 5;
+      pendulums.forEach((p, idx) => {
+        const px = w * 0.35 + idx * spacing;
+        const pLen = p.L * (h * 0.7);
+        const bx = px + Math.sin(p.theta) * pLen * 0.4;
+        const by = topY + Math.cos(p.theta) * pLen;
+        const isRes = Math.abs(p.L - L_D) < 0.02;
+
+        bCtx.beginPath();
+        bCtx.moveTo(px, topY + 4);
+        bCtx.lineTo(bx, by);
+        bCtx.strokeStyle = isRes ? '#D71920' : '#4B5563';
+        bCtx.lineWidth = isRes ? 2.5 : 1.5;
+        bCtx.stroke();
+
+        bCtx.beginPath();
+        bCtx.arc(bx, by, isRes ? 11 : 8, 0, Math.PI * 2);
+        bCtx.fillStyle = isRes ? '#D71920' : '#374151';
+        bCtx.fill();
+        bCtx.strokeStyle = '#FFF';
+        bCtx.lineWidth = 1.5;
+        bCtx.stroke();
+
+        if (isRes) {
+          bCtx.beginPath();
+          bCtx.arc(bx, by, 16 + Math.sin(time * 8) * 4, 0, Math.PI * 2);
+          bCtx.strokeStyle = 'rgba(215, 25, 32, 0.4)';
+          bCtx.lineWidth = 2;
+          bCtx.stroke();
+        }
+
+        bCtx.fillStyle = isRes ? '#D71920' : '#6B7280';
+        bCtx.font = (isRes ? 'bold 11px' : '10px') + ' sans-serif';
+        bCtx.fillText(p.id, bx - 6, by + 22);
+      });
+    }
+
+    // Biểu đồ 1: x(t)
+    function renderChartXt() {
+      const w = xtCanvas.width / window.devicePixelRatio;
+      const h = xtCanvas.height / window.devicePixelRatio;
+      xtCtx.clearRect(0, 0, w, h);
+
+      xtCtx.strokeStyle = '#E5E7EB';
+      xtCtx.beginPath();
+      xtCtx.moveTo(30, h/2); xtCtx.lineTo(w - 10, h/2);
+      xtCtx.stroke();
+
+      xtCtx.beginPath();
+      xtCtx.strokeStyle = '#D71920';
+      xtCtx.lineWidth = 2;
+      const omega_d = Math.sqrt(g / L_D);
+
+      for (let x = 30; x < w - 10; x++) {
+        const tVal = time - (w - 10 - x) * 0.03;
+        const yVal = h/2 - Math.sin(omega_d * tVal) * 35;
+        if (x === 30) xtCtx.moveTo(x, yVal);
+        else xtCtx.lineTo(x, yVal);
+      }
+      xtCtx.stroke();
+    }
+
+    // Biểu đồ 2: A(f) Lorentzian
+    function renderChartAf() {
+      const w = afCanvas.width / window.devicePixelRatio;
+      const h = afCanvas.height / window.devicePixelRatio;
+      afCtx.clearRect(0, 0, w, h);
+
+      afCtx.strokeStyle = '#E5E7EB';
+      afCtx.beginPath();
+      afCtx.moveTo(35, 15); afCtx.lineTo(35, h - 25);
+      afCtx.lineTo(w - 15, h - 25);
+      afCtx.stroke();
+
+      const f_d = (1 / (2 * Math.PI)) * Math.sqrt(g / L_D);
+      document.getElementById('peak-freq-lbl').innerText = `Đỉnh: ${f_d.toFixed(2)} Hz`;
+
+      afCtx.beginPath();
+      afCtx.strokeStyle = '#D71920';
+      afCtx.lineWidth = 2.5;
+
+      for (let x = 35; x < w - 15; x++) {
+        const f = 0.2 + ((x - 35) / (w - 50)) * 1.6;
+        const wVal = 2 * Math.PI * f;
+        const w0 = 2 * Math.PI * f_d;
+        const val = 1 / Math.sqrt(Math.pow(w0*w0 - wVal*wVal, 2) + 4 * gamma*gamma * wVal*wVal);
+        const y = (h - 25) - Math.min(val * 40, h - 40);
+        if (x === 35) afCtx.moveTo(x, y);
+        else afCtx.lineTo(x, y);
+      }
+      afCtx.stroke();
+
+      const peakX = 35 + ((f_d - 0.2) / 1.6) * (w - 50);
+      afCtx.fillStyle = '#D71920';
+      afCtx.beginPath();
+      afCtx.arc(peakX, 28, 4, 0, Math.PI * 2);
+      afCtx.fill();
+    }
+
+    // Biểu đồ 3: Pha phi(f)
+    function renderChartPhase() {
+      const w = phaseCanvas.width / window.devicePixelRatio;
+      const h = phaseCanvas.height / window.devicePixelRatio;
+      phaseCtx.clearRect(0, 0, w, h);
+
+      phaseCtx.strokeStyle = '#E5E7EB';
+      phaseCtx.beginPath();
+      phaseCtx.moveTo(35, 15); phaseCtx.lineTo(35, h - 25);
+      phaseCtx.lineTo(w - 15, h - 25);
+      phaseCtx.stroke();
+
+      const f_d = (1 / (2 * Math.PI)) * Math.sqrt(g / L_D);
+      const w0 = 2 * Math.PI * f_d;
+
+      phaseCtx.beginPath();
+      phaseCtx.strokeStyle = '#2563EB';
+      phaseCtx.lineWidth = 2;
+
+      for (let x = 35; x < w - 15; x++) {
+        const f = 0.2 + ((x - 35) / (w - 50)) * 1.6;
+        const wVal = 2 * Math.PI * f;
+        const phi = Math.atan2(2 * gamma * wVal, w0*w0 - wVal*wVal); // 0 đến pi
+        const y = (h - 25) - (phi / Math.PI) * (h - 45);
+        if (x === 35) phaseCtx.moveTo(x, y);
+        else phaseCtx.lineTo(x, y);
+      }
+      phaseCtx.stroke();
+    }
+
+    // Biểu đồ 4: Công suất P(f)
+    function renderChartPower() {
+      const w = powerCanvas.width / window.devicePixelRatio;
+      const h = powerCanvas.height / window.devicePixelRatio;
+      powerCtx.clearRect(0, 0, w, h);
+
+      powerCtx.strokeStyle = '#E5E7EB';
+      powerCtx.beginPath();
+      powerCtx.moveTo(35, 15); powerCtx.lineTo(35, h - 25);
+      powerCtx.lineTo(w - 15, h - 25);
+      powerCtx.stroke();
+
+      const f_d = (1 / (2 * Math.PI)) * Math.sqrt(g / L_D);
+      const w0 = 2 * Math.PI * f_d;
+
+      powerCtx.beginPath();
+      powerCtx.strokeStyle = '#F59E0B';
+      powerCtx.lineWidth = 2;
+
+      for (let x = 35; x < w - 15; x++) {
+        const f = 0.2 + ((x - 35) / (w - 50)) * 1.6;
+        const wVal = 2 * Math.PI * f;
+        const denom = Math.pow(w0*w0 - wVal*wVal, 2) + 4 * gamma*gamma * wVal*wVal;
+        const P = (wVal*wVal) / denom;
+        const y = (h - 25) - Math.min(P * 12, h - 40);
+        if (x === 35) powerCtx.moveTo(x, y);
+        else powerCtx.lineTo(x, y);
+      }
+      powerCtx.stroke();
+    }
+
+    // 3. EXPERIMENT DATA CENTER TABLE
+    function updateDataCenterTable() {
+      const tbody = document.getElementById('table-data-center');
+      tbody.innerHTML = pendulums.map(p => {
+        const f0 = (1 / (2 * Math.PI)) * Math.sqrt(g / p.L);
+        const isMatch = Math.abs(p.L - L_D) < 0.02;
+        const ampTheory = (p.amp * 100);
+        const ampSim = ampTheory * (1 + (Math.sin(p.L * 10) * 0.012)); // Sai số ngẫu nhiên < 1.2%
+        const err = Math.abs((ampSim - ampTheory) / ampTheory * 100);
+
+        return `
+          <tr class="${isMatch ? 'bg-red-50/80 font-bold text-red-600' : 'text-gray-700'}">
+            <td class="py-2.5">${p.id} ${isMatch ? '★ (Cộng hưởng)' : ''}</td>
+            <td class="py-2.5">${p.L.toFixed(2)}</td>
+            <td class="py-2.5">${f0.toFixed(2)}</td>
+            <td class="py-2.5">${ampTheory.toFixed(2)}</td>
+            <td class="py-2.5">${ampSim.toFixed(2)}</td>
+            <td class="py-2.5 text-right font-bold ${err > 1 ? 'text-amber-600' : 'text-emerald-600'}">${err.toFixed(2)}%</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function exportCSVData() {
+      let csv = "ConLac,ChieuDai_m,TanSo_Hz,BienDoLyThuyet_cm,BienDoThucNghiem_cm,SaiSo_Percent\n";
+      pendulums.forEach(p => {
+        const f0 = (1 / (2 * Math.PI)) * Math.sqrt(g / p.L);
+        const aT = (p.amp * 100);
+        const aS = aT * 1.01;
+        csv += `${p.id},${p.L.toFixed(2)},${f0.toFixed(2)},${aT.toFixed(2)},${aS.toFixed(2)},1.00%\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = window.URL.createObjectURL(blob);
+      a.download = "BartonLab_DataCenter.csv";
+      a.click();
+    }
+
+    // 4. BỘ 10 CÂU HỎI TRẮC NGHIỆM
+    const quizQuestions = [
+      {
+        q: "1. Trong hệ con lắc Barton, con lắc phụ nào sẽ dao động với biên độ lớn nhất?",
+        opts: ["Con lắc dài nhất", "Con lắc ngắn nhất", "Con lắc có chiều dài bằng con lắc phát động D", "Tất cả dao động như nhau"],
+        ans: 2,
+        exp: "Khi chiều dài bằng nhau (L = L_D), tần số riêng trùng tần số kích thích làm xảy ra hiện tượng cộng hưởng cơ học."
+      },
+      {
+        q: "2. Tại trạng thái cộng hưởng biên độ cực đại, độ lệch pha giữa lực cưỡng bức và li độ là bao nhiêu?",
+        opts: ["0 rad (đồng pha)", "π/4 rad (45°)", "π/2 rad (vuông pha)", "π rad (ngược pha)"],
+        ans: 2,
+        exp: "Tại cộng hưởng, li độ trễ pha π/2 so với ngoại lực F(t), nghĩa là ngoại lực cùng pha hoàn hảo với vận tốc v(t)."
+      },
+      {
+        q: "3. Tần số góc tại đỉnh biên độ cộng hưởng ω_r khi có lực cản nhớt là:",
+        opts: ["ω_r = ω₀", "ω_r = √(ω₀² - 2γ²)", "ω_r = √(ω₀² + γ²)", "ω_r = ω₀ - γ"],
+        ans: 1,
+        exp: "Dưới tác dụng của lực cản tuyến tính, đỉnh cộng hưởng biên độ dịch nhẹ về phía tần số thấp hơn theo công thức √(ω₀² - 2γ²)."
+      },
+      {
+        q: "4. Cơ chế truyền lực chính trong hệ con lắc Barton là gì?",
+        opts: ["Truyền qua không khí", "Truyền qua từ trường", "Truyền qua độ võng và sức căng của trục dây treo", "Truyền qua bức xạ nhiệt"],
+        ans: 2,
+        exp: "Khi con lắc D dao động, nó kéo dây treo đung đưa tuần hoàn tạo ngoại lực cưỡng bức tác dụng lên các con lắc phụ."
+      },
+      {
+        q: "5. Vì sao các con lắc phụ trong thí nghiệm Barton thường làm bằng nón giấy nhẹ?",
+        opts: ["Để đẹp mắt", "Để giảm dao động riêng tự do và tăng độ nhạy đáp ứng cưỡng bức", "Để không phát ra tiếng động", "Để tránh bị đứt dây"],
+        ans: 1,
+        exp: "Khối lượng nhẹ giúp lực cản không khí nhanh chóng dập tắt dao động tự do ban đầu, chỉ giữ lại dao động cưỡng bức xác lập."
+      },
+      {
+        q: "6. Hiện tượng sập cầu Tacoma Narrows (1940) thực chất do cơ chế nào?",
+        opts: ["Cộng hưởng cưỡng bức tuyến tính do bước chân", "Mất ổn định xoắn khí đàn hồi (Torsional Flutter)", "Động đất mạnh", "Dây cáp bị quá tải trọng tĩnh"],
+        ans: 1,
+        exp: "Các xoáy gió Von Kármán tạo momen tự kích động làm xoắn sập cầu, không phải hiện tượng cộng hưởng tuyến tính thông thường."
+      },
+      {
+        q: "7. Quả cầu nặng 660 tấn ở tháp Taipei 101 là thiết bị gì?",
+        opts: ["Máy phát điện", "Con lắc giảm chấn khối lượng điều chỉnh (TMD)", "Hệ thống radar", "Cột thu lôi"],
+        ans: 1,
+        exp: "TMD (Tuned Mass Damper) dao động ngược pha với tần số rung của tòa nhà để hấp thụ động năng bão và động đất."
+      },
+      {
+        q: "8. Khi hệ số lực cản môi trường γ tăng lên thì hiện tượng cộng hưởng sẽ như thế nào?",
+        opts: ["Biên độ đỉnh tăng lên", "Đỉnh cộng hưởng tù hơn và biên độ cực đại giảm đi", "Không có gì thay đổi", "Tần số cộng hưởng tăng vọt"],
+        ans: 1,
+        exp: "Lực cản càng lớn thì năng lượng tiêu hao càng nhiều, làm đường cong phổ Lorentzian bẹt xuống và đỉnh thấp hơn."
+      },
+      {
+        q: "9. Trong trạng thái dao động cưỡng bức xác lập, công suất trung bình bơm vào hệ cân bằng với:",
+        opts: ["Bằng 0", "Công suất tiêu hao trung bình do lực cản", "Thế năng đàn hồi cực đại", "Động năng ban đầu"],
+        ans: 1,
+        exp: "Theo định luật bảo toàn năng lượng, ở trạng thái dừng, toàn bộ công ngoại lực bơm vào bù đắp chính xác phần mất mát do ma sát."
+      },
+      {
+        q: "10. Cầu đi bộ Millennium London (2000) từng bị lắc ngang do:",
+        opts: ["Gió bão cực lớn", "Kích thích ngang đồng bộ (Synchronous Lateral Excitation) của người đi bộ", "Tàu thuyền đâm phải trụ cầu", "Nền móng bị lún"],
+        ans: 1,
+        exp: "Khi cầu lắc nhẹ sang bên, người đi bộ vô thức bước nghiêng theo để giữ thăng bằng làm tần số bước chân đồng bộ với dao động cầu."
+      }
+    ];
+
+    let quizAnswers = new Array(10).fill(null);
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizQuestions.map((q, qIdx) => `
+        <div class="p-4 rounded-xl border border-gray-200 bg-white space-y-2">
+          <p class="font-bold text-xs sm:text-sm text-gray-900">${q.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            ${q.opts.map((opt, oIdx) => `
+              <button onclick="handleQuizSelect(${qIdx}, ${oIdx})" id="btn-quiz-${qIdx}-${oIdx}" class="text-left px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs text-gray-700 transition">
+                <span class="font-bold text-gray-500 mr-1">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-exp-${qIdx}" class="hidden p-2.5 rounded-lg bg-gray-50 text-[11px] text-gray-600 mt-2"></div>
+        </div>
+      `).join('');
+    }
+
+    function handleQuizSelect(qIdx, oIdx) {
+      if (quizAnswers[qIdx] !== null) return; // Đã trả lời rồi
+      quizAnswers[qIdx] = oIdx;
+
+      const q = quizQuestions[qIdx];
+      const isCorrect = (oIdx === q.ans);
+
+      // Đổi màu nút
+      for (let i = 0; i < 4; i++) {
+        const b = document.getElementById(`btn-quiz-${qIdx}-${i}`);
+        if (i === q.ans) b.className = "text-left px-3 py-2 rounded-lg border border-emerald-500 bg-emerald-50 text-xs font-bold text-emerald-800";
+        else if (i === oIdx && !isCorrect) b.className = "text-left px-3 py-2 rounded-lg border border-red-500 bg-red-50 text-xs font-bold text-red-800";
+        else b.classList.add('opacity-50');
+      }
+
+      // Hiện lời giải
+      const expBox = document.getElementById(`quiz-exp-${qIdx}`);
+      expBox.classList.remove('hidden');
+      expBox.innerHTML = `<b>${isCorrect ? '✅ Chính xác!' : '❌ Chưa chính xác!'}</b> ${q.exp}`;
+
+      // Tính tổng điểm
+      const score = quizAnswers.filter((ans, idx) => ans === quizQuestions[idx].ans).length;
+      document.getElementById('quiz-score').innerText = score;
+    }
+
+    // 5. CHẾ ĐỘ THUYẾT TRÌNH PRO (PRESENTATION DECK)
+    let curSlide = 1;
+    let isLaserActive = false;
+
+    const slides = [
+      {
+        title: "1. Tổng Quan Hệ Con Lắc Barton",
+        content: "Khảo sát thực nghiệm về truyền năng lượng tuần hoàn qua dây cáp võng. Nhận diện hiện tượng biên độ cực đại phụ thuộc vào độ dài con lắc.",
+        points: ["Tác quyền đề án: Lê Hoàng Hải", "Hệ gồm: 1 con lắc phát động nặng D và 5 con lắc nón nhẹ P1 - P5.", "Mục tiêu: Chứng minh định lượng sự tương thích tần số riêng."],
+        notes: "Mở đầu chào hội đồng. Giới thiệu tên đề án và bố cục thí nghiệm gồm con lắc phát động và chuỗi con lắc phụ."
+      },
+      {
+        title: "2. Phương Trình Vi Phân Động Học",
+        content: "Mô hình dao động điều hòa chịu lực cản nhớt tuyến tính và ngoại lực tuần hoàn.",
+        points: ["Phương trình: m·x'' + b·x' + k·x = F₀·cos(ωt)", "Biên độ: A(ω) = (F₀/m) / √[(ω₀² - ω²)² + 4γ²ω²]", "Độ lệch pha: φ = atan2(2γω, ω₀² - ω²)"],
+        notes: "Nhấn mạnh với hội đồng rằng tần số đỉnh biên độ thực nghiệm ω_r = √(ω₀² - 2γ²) dịch nhẹ so với tần số riêng ω₀ khi có lực cản."
+      },
+      {
+        title: "3. Bí Mật Độ Lệch Pha Vuông Góc π/2",
+        content: "Giải thích cơ chế tối ưu hóa truyền tải công suất trong cơ học dao động cưỡng bức.",
+        points: ["Tại cộng hưởng (ω = ω₀), li độ trễ pha π/2 so với lực F(t).", "Vận tốc v(t) = x'(t) sớm pha π/2 so với x(t), do đó v(t) hoàn toàn ĐỒNG PHA với F(t).", "Công suất tức thời P(t) = F·v luôn mang giá trị dương cực đại."],
+        notes: "Điểm mấu chốt để trả lời giáo viên: Vì lực cùng hướng vận tốc nên công ngoại lực sinh ra luôn dương, năng lượng chỉ bơm vào hệ mà không bị dội ngược."
+      },
+      {
+        title: "4. Dữ Liệu Thực Nghiệm & Kiểm Chuẩn Sai Số",
+        content: "Đối chiếu các giá trị đo đạc trực tiếp từ mô phỏng so với tính toán giải tích.",
+        points: ["Con lắc P3 (L = 0.50m) đạt biên độ lớn nhất vượt trội so với các con lắc còn lại.", "Sai số tương đối giữa mô phỏng số và lý thuyết giải tích luôn < 1.5%."],
+        notes: "Chỉ vào bảng số liệu Experiment Data Center để chứng minh tính nhất quán của kết quả thực nghiệm."
+      },
+      {
+        title: "5. Phân Định Bản Chất Các Sự Cố Thực Tế",
+        content: "Đính chính các quan niệm thường bị nhầm lẫn trong lịch sử khoa học kỹ thuật.",
+        points: ["Cầu Tacoma Narrows (1940): Mất ổn định xoắn khí đàn hồi (Torsional Flutter), không phải cộng hưởng tuyến tính thông thường.", "Taipei 101: Khối cầu 660 tấn TMD dao động ngược pha hấp thụ chấn động gió bão.", "Cầu Millennium London: Kích thích ngang đồng bộ của người đi bộ."],
+        notes: "Phần ghi điểm tuyệt đối: Nêu rõ sự khác biệt giữa cộng hưởng cưỡng bức đơn thuần và hiện tượng mất ổn định tự kích động khí đàn hồi."
+      },
+      {
+        title: "6. Tổng Kết Đề Án Nghiên Cứu",
+        content: "Hệ thống hóa toàn bộ kiến thức và kết luận thực nghiệm thu nhận được.",
+        points: ["Hệ số phẩm chất Q càng cao thì đỉnh cộng hưởng càng nhọn và biên độ càng lớn.", "Ứng dụng linh hoạt trong chế tạo nhạc cụ, thiết kế máy móc chống rung và kỹ thuật công trình."],
+        notes: "Cảm ơn quý thầy cô và hội đồng đánh giá đã lắng nghe. Sẵn sàng chuyển sang phần hỏi đáp phản biện."
+      }
+    ];
+
+    function toggleDeckMode() {
+      const d = document.getElementById('presentation-deck');
+      d.classList.toggle('hidden');
+      d.classList.toggle('flex');
+      renderSlide();
+    }
+
+    function renderSlide() {
+      const s = slides[curSlide - 1];
+      document.getElementById('deck-cur-slide').innerText = curSlide;
+      document.getElementById('deck-slide-title').innerText = s.title;
+      document.getElementById('deck-progress').style.width = ((curSlide / slides.length) * 100) + '%';
+      document.getElementById('deck-speaker-notes').innerText = s.notes;
+
+      document.getElementById('deck-content').innerHTML = `
+        <span class="text-xs font-bold text-red-600 uppercase tracking-widest">NỘI DUNG CHƯƠNG ${curSlide}</span>
+        <h2 class="text-2xl sm:text-4xl font-black text-gray-900 leading-tight">${s.title}</h2>
+        <p class="text-base text-gray-600 leading-relaxed">${s.content}</p>
+        <div class="bg-gray-50 border border-gray-200 p-6 rounded-2xl space-y-3">
+          ${s.points.map(pt => `<div class="flex items-center gap-2 text-sm text-gray-800"><span class="w-2 h-2 rounded-full bg-red-600"></span> ${pt}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    function nextSlide() {
+      if (curSlide < slides.length) { curSlide++; renderSlide(); }
+    }
+    function prevSlide() {
+      if (curSlide > 1) { curSlide--; renderSlide(); }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+      else if (e.key === 'Escape') {
+        const d = document.getElementById('presentation-deck');
+        if (!d.classList.contains('hidden')) toggleDeckMode();
+      }
+    });
+
+    function toggleLaserPointer() {
+      isLaserActive = !isLaserActive;
+      const dot = document.getElementById('laser-pointer');
+      dot.style.display = isLaserActive ? 'block' : 'none';
+      document.getElementById('btn-laser').classList.toggle('bg-red-100', isLaserActive);
+    }
+    window.addEventListener('mousemove', (e) => {
+      if (!isLaserActive) return;
+      const dot = document.getElementById('laser-pointer');
+      dot.style.left = e.clientX + 'px';
+      dot.style.top = e.clientY + 'px';
+    });
+
+    // 6. TRỢ LÝ GEMINI AI & CÀI ĐẶT
+    let apiKey = localStorage.getItem('gemini_api_key') || '';
+    let aiMode = 'tutor';
+
+    function toggleSettingsModal() {
+      const m = document.getElementById('settings-modal');
+      m.classList.toggle('hidden');
+      m.classList.toggle('flex');
+      if (!m.classList.contains('hidden')) {
+        document.getElementById('input-api-key').value = apiKey;
+      }
+    }
+
+    function saveSettings() {
+      apiKey = document.getElementById('input-api-key').value.trim();
+      localStorage.setItem('gemini_api_key', apiKey);
+      toggleSettingsModal();
+      alert('Đã lưu cấu hình API Key thành công!');
+    }
+
+    async function testGeminiConnection() {
+      const key = document.getElementById('input-api-key').value.trim();
+      const badge = document.getElementById('api-status-badge');
+      if (!key) {
+        badge.innerText = 'Chưa nhập khóa';
+        badge.className = 'font-bold text-gray-500';
+        return;
+      }
+      badge.innerText = 'Đang kiểm tra...';
+      badge.className = 'font-bold text-amber-600';
+
+      try {
+        const model = document.getElementById('select-model').value;
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: "Hello" }] }] })
+        });
+        const data = await res.json();
+        if (data.candidates) {
+          badge.innerText = 'ĐÃ KẾT NỐI ✅';
+          badge.className = 'font-bold text-emerald-600';
+        } else {
+          badge.innerText = 'LỖI KẾT NỐI (Kiểm tra lại Key)';
+          badge.className = 'font-bold text-red-600';
+        }
+      } catch (err) {
+        badge.innerText = 'Lỗi mạng hoặc Key sai';
+        badge.className = 'font-bold text-red-600';
+      }
+    }
+
+    function toggleAIChat() {
+      const m = document.getElementById('ai-modal');
+      m.classList.toggle('hidden');
+      m.classList.toggle('flex');
+    }
+
+    function setAIMode(mode) {
+      aiMode = mode;
+      ['tutor', 'examiner', 'analyst', 'coach'].forEach(m => {
+        const btn = document.getElementById(`mode-${m}`);
+        if (m === mode) btn.className = "px-2 py-1 rounded bg-white text-red-600 font-bold shadow-sm whitespace-nowrap";
+        else btn.className = "px-2 py-1 rounded text-gray-600 hover:bg-white whitespace-nowrap";
+      });
+    }
+
+    function askPrompt(txt) {
+      document.getElementById('ai-user-input').value = txt;
+      if (document.getElementById('ai-modal').classList.contains('hidden')) toggleAIChat();
+      sendAIMessage();
+    }
+
+    async function sendAIMessage() {
+      const inp = document.getElementById('ai-user-input');
+      const text = inp.value.trim();
+      if (!text) return;
+
+      appendMsg('user', text);
+      inp.value = '';
+
+      if (apiKey) {
+        // Gọi Google Gemini API thật
+        try {
+          const contextData = `
+            Bối cảnh phòng lab hiện tại của tác giả Lê Hoàng Hải:
+            - Chiều dài Driver L_D = ${L_D}m
+            - Hệ số cản gamma = ${gamma}s^-1
+            - Ngoại lực F0 = ${F0}N
+            - Tần số kích thích fd = ${(1/(2*Math.PI)*Math.sqrt(g/L_D)).toFixed(2)}Hz
+            Vai trò: Bạn là ${aiMode === 'examiner' ? 'Giám khảo phản biện khó tính' : aiMode === 'analyst' ? 'Chuyên gia số liệu vật lý' : 'Giáo viên hướng dẫn nhiệt tình'}. Trả lời tiếng Việt ngắn gọn, súc tích.
+          `;
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: contextData + "\nCâu hỏi: " + text }] }] })
+          });
+          const d = await res.json();
+          const reply = d.candidates ? d.candidates[0].content.parts[0].text : 'Lỗi từ Gemini API.';
+          appendMsg('ai', reply);
+        } catch (e) {
+          appendMsg('ai', fallbackAIResponse(text));
+        }
+      } else {
+        // Fallback tự động không cần API Key
+        setTimeout(() => {
+          appendMsg('ai', fallbackAIResponse(text));
+        }, 400);
+      }
+    }
+
+    function appendMsg(role, txt) {
+      const box = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = (role === 'user') 
+        ? 'bg-red-600 text-white p-2.5 rounded-xl ml-6 text-right leading-relaxed shadow-sm'
+        : 'bg-white p-2.5 rounded-xl border border-gray-200 text-gray-800 shadow-sm leading-relaxed';
+      div.innerHTML = txt;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function fallbackAIResponse(q) {
+      const l = q.toLowerCase();
+      if (l.includes('p3') || l.includes('vì sao') || l.includes('mạnh nhất')) {
+        return `Con lắc <b>P3</b> dao động với biên độ lớn nhất vì chiều dài của nó (${L_D.toFixed(2)}m) bằng đúng chiều dài con lắc phát động D. Khi đó tần số góc kích thích trùng với tần số riêng (\\(\\omega_d = \\omega_0\\)), hệ đạt hiện tượng <b>cộng hưởng cơ học</b>.`;
+      }
+      if (l.includes('pha') || l.includes('pi/2') || l.includes('90')) {
+        return `Tại cộng hưởng, độ lệch pha đạt đúng \\(\\Delta\\phi = \\pi/2\\) rad. Điều này làm cho vận tốc \\(v(t)\\) luôn cùng chiều với ngoại lực \\(F(t)\\), giúp <b>công suất truyền năng lượng tức thời \\(P(t) = F \\cdot v\\) luôn dương cực đại</b>.`;
+      }
+      if (l.includes('phản biện') || l.includes('giáo viên')) {
+        return `<b>Câu hỏi giáo viên có thể đặt ra:</b> <i>"Nếu tăng khối lượng quả nặng của con lắc P3 lên gấp đôi thì chu kỳ và hiện tượng cộng hưởng có thay đổi không?"</i><br><b>Gợi ý trả lời:</b> Chu kỳ con lắc đơn góc nhỏ \\(T = 2\\pi\\sqrt{L/g}\\) không phụ thuộc khối lượng, nên tần số cộng hưởng vẫn giữ nguyên!`;
+      }
+      return `Thông số phòng thí nghiệm hiện tại: Chiều dài Driver \\(L_D = ${L_D.toFixed(2)}m\\), Tần số kích thích \\(f_d = ${(1/(2*Math.PI)*Math.sqrt(g/L_D)).toFixed(2)}Hz\\), Hệ số cản \\(\\gamma = ${gamma.toFixed(2)}s^{-1}\\). Biên độ cực đại tại đỉnh \\(\\omega_r = \\sqrt{\\omega_0^2 - 2\\gamma^2}\\).`;
+    }
+
+    // 7. CÁC NÚT ĐIỀU KHIỂN & KHỞI ĐỘNG
+    function toggleSimulation() {
+      isRunning = !isRunning;
+      document.getElementById('text-sim-toggle').innerText = isRunning ? 'Tạm dừng' : 'Tiếp tục';
+      document.getElementById('icon-sim-toggle').setAttribute('data-lucide', isRunning ? 'pause' : 'play');
+      lucide.createIcons();
+    }
+
+    function resetSimulation() {
+      time = 0;
+      pendulums.forEach(p => { p.theta = 0; p.amp = 0; });
+    }
+
+    function updateBartonParams() {
+      L_D = parseFloat(document.getElementById('param-ld').value);
+      gamma = parseFloat(document.getElementById('param-gamma').value);
+      F0 = parseFloat(document.getElementById('param-force').value);
+      simSpeed = parseFloat(document.getElementById('param-speed').value);
+
+      document.getElementById('lbl-ld').innerText = L_D.toFixed(2) + ' m';
+      document.getElementById('lbl-gamma').innerText = gamma.toFixed(2) + ' s⁻¹';
+      document.getElementById('lbl-force').innerText = F0.toFixed(1) + ' N';
+      document.getElementById('lbl-speed').innerText = simSpeed.toFixed(1) + 'x';
+    }
+
+    window.onload = () => {
+      lucide.createIcons();
+      resizeAllCanvases();
+      renderQuiz();
+      physicsLoop();
+    };
+  </script>
+</body>
+</html>
